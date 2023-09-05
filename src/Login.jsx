@@ -42,6 +42,9 @@ const Login = ({ setCorsErrorModalOpen }) => {
       useInteractionCodeFlow: useInteractionCode,
       state,
       otp,
+      features: {
+        registrationWithTerms: true,
+      },
     });
 
     widget.renderEl(
@@ -49,8 +52,13 @@ const Login = ({ setCorsErrorModalOpen }) => {
       (res) => {
         // res.status - SUCCESS
         oktaAuth.handleLoginRedirect(res.tokens);
-        console.log("TERMS:::TRUE");
-        history.push("/terms");
+        console.log("TERMS:::TRUE", res.tokens);
+        if (
+          res.tokens?.idToken?.claims &&
+          !res.tokens?.idToken?.claims.tncAccepted
+        ) {
+          history.push("/terms");
+        }
       },
       (err) => {
         throw err;
